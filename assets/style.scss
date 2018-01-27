@@ -1,0 +1,45 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+$screen: 600px;
+$letter: 100px;
+
+#game {
+  background-color: #eee;
+  height: $screen;
+  overflow: hidden;
+  position: relative;
+  width: $screen;
+  #letterbox {
+    border-left: $letter * 2.5 solid #333;
+    border-right: $letter * 2.5 solid #333;
+    height: $screen * 1.5;
+    left: -$letter * 1.5;
+    position: absolute;
+    top: -$screen * .25;
+    transform: rotateZ(0deg);
+    transition: transform .7s;
+    width: ($screen - 2 * $letter);
+    z-index: 200;
+    .horizontal {
+      transform: rotateZ(90deg);
+    }
+  }
+  .ent {
+    display: block;
+    position: relative;
+    z-index: 20;
+    &.player {
+      background-color: #a00;
+      height: 30px;
+      width: 30px;
+      transform: rotateZ(0deg);
+      //transition: left .2s, top .2s;
+      &.horizontal {
+        transform: rotateZ(90deg);
+      }
+    }
+  }
+}

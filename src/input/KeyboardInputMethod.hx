@@ -1,8 +1,9 @@
 package input;
 
 import js.*;
+import js.html.*;
 
-class KeyboardInputMethod extends InputMethod {
+class KeyboardInputMethod implements InputMethod {
   var state = [
        "Space" => false
       ,"ArrowLeft" => false
@@ -15,7 +16,7 @@ class KeyboardInputMethod extends InputMethod {
     ];
   var type:Int = 0;
   
-  private function handleKey(down:Bool, e:KeyboardEvent):Void {
+  function handleKey(down:Bool, e:KeyboardEvent):Void {
     var code = untyped __js__("{0}.code", e);
     if (!state.exists(code)) return;
     state[code] = down;
@@ -23,7 +24,7 @@ class KeyboardInputMethod extends InputMethod {
   
   public function new() {
     JSCompat.addEventListener(Browser.document.body, "keydown", handleKey.bind(true));
-    JSCompat.addEventListener(Browser.document.body, "keyup", handleKey.binf(false));
+    JSCompat.addEventListener(Browser.document.body, "keyup", handleKey.bind(false));
   }
   
   public function tick():InputState {
@@ -31,10 +32,14 @@ class KeyboardInputMethod extends InputMethod {
       else if (state["KeyS"]) 2
       else if (state["KeyD"]) 3
       else type);
+    var x = state["ArrowLeft"] ? -1 : (state["ArrowRight"] ? 1 : 0);
     return (switch (type) {
-        case 1: Joystick(0, 0);
-        case 2: Wheel(0);
-        case 3: Slider(0);
+        case 1:
+        var y = state["ArrowUp"] ? -1 : (state["ArrowDown"] ? 1 : 0);
+        Joystick(x, y);
+        case 2: Wheel(x);
+        case 3: Slider(x * .5 + 1);
+        case _: None;
       });
   }
 }
