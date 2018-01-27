@@ -5,23 +5,19 @@ import js.html.*;
 class SVGSprite extends Sprite {
   var rx:Float;
   var ry:Float;
-  var bw:Float;
-  var bh:Float;
-  var el:DOMElement;
+  public var el:DOMElement;
   
   public function new(type:String, id:Int) {
     super(type, id);
-    bw = 15;
-    bh = 15;
-    el = JSCompat.create("ent player");
-    SVGRenderer.svg.appendChild(el);
+    el = JSCompat.create("ent " + type);
+    SVGRenderer.letter.appendChild(el);
   }
   
   override function get_x():Float {
     return rx;
   }
   override function set_x(x:Float):Float {
-    el.style.left = '${x - bw}px';
+    el.style.left = '${x}px';
     return rx = x;
   }
   
@@ -29,7 +25,7 @@ class SVGSprite extends Sprite {
     return ry;
   }
   override function set_y(y:Float):Float {
-    el.style.top = '${y - bh}px';
+    el.style.top = '${y + 150}px';
     return ry = y;
   }
 }

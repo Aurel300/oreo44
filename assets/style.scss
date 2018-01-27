@@ -17,29 +17,44 @@ $letter: 100px;
     border-right: $letter * 2.5 solid #333;
     height: $screen * 1.5;
     left: -$letter * 1.5;
+    overflow: hidden;
     position: absolute;
     top: -$screen * .25;
     transform: rotateZ(0deg);
     transition: transform .7s;
     width: ($screen - 2 * $letter);
     z-index: 200;
-    .horizontal {
-      transform: rotateZ(90deg);
-    }
   }
   .ent {
     display: block;
-    position: relative;
+    position: absolute;
+    transform: translate(-50%, -50%);
     z-index: 20;
     &.player {
       background-color: #a00;
       height: 30px;
       width: 30px;
-      transform: rotateZ(0deg);
-      //transition: left .2s, top .2s;
-      &.horizontal {
-        transform: rotateZ(90deg);
-      }
+    }
+    &.enemy {
+      background-color: #0a0;
+      height: 16px;
+      width: 16px;
+    }
+    &.bullet {
+      background-color: #a00;
+      border-radius: 50%;
+      height: 6px;
+      width: 6px;
+    }
+  }
+  &.horizontal {
+    #letterbox {
+      transform: rotateZ(90deg);
+    }
+  }
+  &.plane {
+    #letterbox {
+      transform: perspective(300px) rotateX(40deg);
     }
   }
 }

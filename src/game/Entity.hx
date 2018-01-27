@@ -11,12 +11,22 @@ class Entity {
   public var y:Float = 0;
   public var z:Float = 0;
   
-  public function new(game:Game, type:EntityType) {
-    this.game = game;
+  public function new(type:EntityType) {
+    this.game = Main.game;
     this.type = type;
   }
   
   public function tick():Void {
-    remove = true;
+    if (sprite != null) {
+      sprite.x = x;
+      sprite.y = y;
+    }
+  }
+  
+  public function destroy():Void {
+    if (sprite != null) {
+      game.render.removeSprite(sprite);
+      sprite = null;
+    }
   }
 }

@@ -3,8 +3,8 @@ package game;
 class Player extends Entity {
   static var JOY_SPEED = 5.0;
   
-  public function new(game:Game) {
-    super(game, Player);
+  public function new() {
+    super(Player);
     sprite = game.render.createSprite("player");
   }
   
@@ -19,7 +19,6 @@ class Player extends Entity {
       this.y += i;
       case None:
     }
-    sprite.x = x;
-    sprite.y = y;
+    super.tick();
   }
 }
