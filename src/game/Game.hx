@@ -1,10 +1,15 @@
 package game;
 
 import js.*;
+import js.html.*;
 import input.*;
 import render.Renderer;
 
 class Game {
+  public static function snd(id:String):Void {
+    (cast JSCompat.element('snd_$id'):AudioElement).play();
+  }
+  
   public static inline var SCREEN = 600;
   public static inline var LETTER = 100;
   public static inline var SCREEN_HALF = SCREEN / 2;
@@ -112,11 +117,11 @@ class Game {
       render.health(1);
       return;
     }
-    if (hp < 0) {
+    if (hp < 0.1) {
       for (i in 0...40) {
         addEntity(new Particle(Explosion, player.x + Math.random() * 10 - 5, player.y + Math.random() * 10 - 5));
       }
-      // snd death
+      Game.snd("death");
       cleanup();
       gameOvered = true;
       return;
@@ -145,7 +150,7 @@ class Game {
     switch (level.state) {
       case Vertical:
       if (cooldown == 0) {
-        // snd pew
+        Game.snd("pew");
         addEntity(new Bullet(true, player.x, player.y));
       }
       case _:
@@ -156,13 +161,12 @@ class Game {
         if (collision(b, e, 15, 15)) {
           b.remove = true;
           (cast e:Enemy).hurt();
-          // snd hit
         }
       }
     }
     for (b in entityTypes[EntityType.Bullet(false)]) {
       if (collision(b, player, 15, 15) && player.hurting == 0) {
-        // snd hurt
+        Game.snd("hurt");
         hp -= .2;
         player.hurt();
         b.remove = true;
@@ -170,7 +174,7 @@ class Game {
     }
     for (b in entityTypes[EntityType.Pickup]) {
       if (collision(b, player, 25, 25)) {
-        // snd pickup
+        Game.snd("pickup");
         hp += .4;
         player.hurt();
         b.remove = true;
@@ -182,7 +186,7 @@ class Game {
       if (dy < 20) {
         var f = (cast b:Feature);
         if (f.up == (player.x < f.x) && player.hurting == 0) {
-          // snd hurt
+          Game.snd("hurt");
           hp -= .2;
           player.hurt();
           b.remove = true;
@@ -200,7 +204,6 @@ class Game {
         }
         e;
       } ];
-    //entities.sort(entitySort);
     render.tick();
   }
   
