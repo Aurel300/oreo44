@@ -20,6 +20,11 @@ class Sprite {
     return 0;
   }
   
+  public var hurting(never, set):Bool;
+  function set_hurting(h:Bool):Bool {
+    return h;
+  }
+  
   public function new(type:String, id:Int) {
     this.type = type;
     this.id = id;

@@ -41,6 +41,8 @@ class Game {
         ,Bullet(true) => []
         ,Enemy => []
         ,Pickup => []
+        ,Feature => []
+        ,Particle => []
       ];
     level = new Level(this);
     cooldown = 0;
@@ -59,15 +61,18 @@ class Game {
     }
     state = input.tick();
     level.tick();
+    if (cooldown > 0) cooldown--;
+    if (cooldown % 3 == 0) {
+      addEntity(new Particle(Thruster, player.x, player.y));
+    }
     switch (level.state) {
       case Vertical:
-      if (cooldown > 0) cooldown--;
       if (cooldown == 0) {
         addEntity(new Bullet(true, player.x, player.y));
-        cooldown = 10;
       }
       case _:
     }
+    if (cooldown == 0) cooldown = 6;
     for (b in entityTypes[EntityType.Bullet(true)]) {
       for (e in entityTypes[EntityType.Enemy]) {
         if (collision(b, e, 5, 10)) {

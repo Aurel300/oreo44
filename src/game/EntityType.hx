@@ -5,4 +5,6 @@ enum EntityType {
   Bullet(player:Bool);
   Enemy;
   Pickup;
+  Feature;
+  Particle;
 }

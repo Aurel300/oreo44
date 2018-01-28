@@ -8,7 +8,7 @@ class Bullet extends Entity {
     this.player = player;
     this.x = x;
     this.y = y;
-    sprite = game.render.createSprite("bullet" + (player ? " player" : ""));
+    sprite = game.render.createSprite("bullet" + (player ? " playerbullet" : ""));
   }
   
   override public function tick():Void {

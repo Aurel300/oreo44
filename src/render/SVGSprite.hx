@@ -5,11 +5,13 @@ import js.html.*;
 class SVGSprite extends Sprite {
   var rx:Float;
   var ry:Float;
+  var baseCls:String;
   public var el:DOMElement;
   
   public function new(type:String, id:Int) {
     super(type, id);
-    el = JSCompat.create("ent " + type);
+    baseCls = 'ent $type';
+    el = JSCompat.create(baseCls);
     SVGRenderer.letter.appendChild(el);
   }
   
@@ -27,5 +29,10 @@ class SVGSprite extends Sprite {
   override function set_y(y:Float):Float {
     el.style.top = '${y + 150}px';
     return ry = y;
+  }
+  
+  override function set_hurting(h:Bool):Bool {
+    el.className = baseCls + (h ? " hurting" : "");
+    return h;
   }
 }

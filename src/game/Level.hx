@@ -7,10 +7,9 @@ class Level {
   public var transitionLength:Int = 20;
   public var stateQueuePos:Int;
   public var stateQueue:Array<LevelState> = [Vertical, Horizontal, Plane, Horizontal];
-  public var stateLength:Array<Int> = [90, 9000, 30, 30];
+  public var stateLength:Array<Int> = [90000, 30, 30, 30];
   
   public var waves:Array<Wave> = [];
-  public var features:Array<Feature> = [];
   
   public function new(game:Game) {
     this.game = game;
@@ -37,7 +36,6 @@ class Level {
   }
   
   public function tick() {
-    if (Math.random() < 0.01) waves.push(new Wave());
     waves = [ for (w in waves) {
         w.tick();
         if (w.remove) continue;
@@ -47,9 +45,14 @@ class Level {
     switch (state) {
       case Transition(_, to):
       if (stateTime >= transitionLength) updateState(to);
+      return;
+      case Vertical:
+      if (Math.random() < 0.01) waves.push(new Wave());
+      case Horizontal:
+      if (Math.random() < 0.01) game.addEntity(new Feature(Math.random() < .5, Math.random()));
       case _:
-      if (stateTime >= stateLength[stateQueuePos]) nextState();
     }
+    if (stateTime >= stateLength[stateQueuePos]) nextState();
   }
 }
 
@@ -136,8 +139,4 @@ enum WaveType {
   HorizontalRipple(left:Bool, n:Int);
   Surround(left:Bool);
   Snake(left:Bool);
-}
-
-class Feature {
-  
 }

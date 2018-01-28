@@ -7,7 +7,7 @@ $screen: 600px;
 $letter: 100px;
 
 #game {
-  background-color: #eee;
+  background-color: #999;
   height: $screen;
   overflow: hidden;
   position: relative;
@@ -31,9 +31,11 @@ $letter: 100px;
     transform: translate(-50%, -50%);
     z-index: 20;
     &.player {
-      background-color: #a00;
-      height: 30px;
-      width: 30px;
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 0 15px 30px 15px;
+      border-color: transparent transparent #a00 transparent;
     }
     &.enemy {
       background-color: #0a0;
@@ -46,6 +48,38 @@ $letter: 100px;
       height: 6px;
       width: 6px;
     }
+    &.feature {
+      background-color: #00a;
+      height: 40px;
+      transform: translate(0, -50%);
+      width: 400px;
+      &.up {
+        transform: translate(-100%, -50%);
+      }
+    }
+    &.particle {
+      &.thruster {
+        animation: thruster 1s;
+        background-color: #fa0;
+        height: 8px;
+        width: 8px;
+      }
+      &.explosion {
+        animation: explosion 1s;
+        border-radius: 50%;
+        height: 40px;
+        width: 40px;
+      }
+      &.spark {
+        animation: spark 0.5s;
+        background-color: #fff;
+        height: 2px;
+        width: 2px;
+      }
+    }
+    &.hurting {
+      background-color: #fff;
+    }
   }
   &.horizontal {
     #letterbox {
@@ -56,5 +90,39 @@ $letter: 100px;
     #letterbox {
       transform: perspective(300px) rotateX(40deg);
     }
+  }
+}
+
+@keyframes thruster {
+  from {
+    transform: translate(-50%, -50%), rotateZ(0deg);
+  }
+  to {
+    height: 15px;
+    opacity: 0;
+    transform: translate(-50%, -50%), rotateZ(360deg);
+    width: 15px;
+  }
+}
+
+@keyframes explosion {
+  from {
+    background-color: rgba(#fa0, 1);
+    height: 40px;
+    width: 40px;
+  }
+  to {
+    background-color: rgba(#a00, .4);
+    height: 60px;
+    width: 60px;
+  }
+}
+
+@keyframes spark {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.5;
   }
 }
