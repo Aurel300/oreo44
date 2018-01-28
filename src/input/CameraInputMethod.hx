@@ -100,7 +100,7 @@ class CameraInputMethod implements InputMethod {
       proxy2 = centroid(groups[JOY_SECOND][1]);
       proxy3 = centroid(groups[JOY_SECOND][2]);
       var rotations = controllerRotation(center, proxy, proxy2, proxy3);
-      return Joystick(rotations.y, rotations.z, rotations.x);
+      return Joystick(rotations.y * 2, -rotations.z * 2, rotations.x);
     }
     if(groups[WHEEL_MAIN].length == 1 && groups[WHEEL_SECOND].length == 3) {
       center = centroid(groups[WHEEL_MAIN][0]);
@@ -140,7 +140,7 @@ class CameraInputMethod implements InputMethod {
     var od1 = oppositeV1.lengthSq;
     var od3 = oppositeV3.lengthSq;
     return new Vector3(
-      - v1.angle,
+      v3.signedAngleWith(new Vector2(-1, 0)) * 5,
       Math.acos(Math.min(d1, od1) / Math.max(d1, od1)) * (d1 > od1 ? -1 : 1), 
       Math.acos(Math.min(d3, od3) / Math.max(d3, od3)) * (d3 > od3 ? -1 : 1));
   }
@@ -205,7 +205,7 @@ class CameraInputMethod implements InputMethod {
     if ((r - g) >= threshold && (r - b) >= threshold * 2) {
       return true;
     }
-    return dx * dx + dy * dy + dz * dz < 15000;
+    return dx * dx + dy * dy + dz * dz < 30000;
   }
 
   public function centroid(rect:Rect):Vector2 {

@@ -14,7 +14,7 @@ class Player extends Entity {
       this.x += x * JOY_SPEED;
       this.y += y * JOY_SPEED;
       case Wheel(a, _, _):
-      this.y += a;
+      this.x += a;
       case Slider(i):
       this.y += i;
       case None:
