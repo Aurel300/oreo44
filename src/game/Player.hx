@@ -5,6 +5,8 @@ class Player extends Entity {
   
   public function new() {
     super(Player);
+    x = Game.SCREEN_LETTER / 2;
+    y = Game.SCREEN * .75;
     sprite = game.render.createSprite("player");
   }
   
@@ -15,6 +17,7 @@ class Player extends Entity {
       this.y += y * JOY_SPEED;
       case Wheel(a, _, _):
       this.x += a;
+      this.y = (this.y * 11 + Game.SCREEN_LETTER / 2) / 12;
       case Slider(i):
       this.y += i;
       case None:
