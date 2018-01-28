@@ -11,10 +11,7 @@
      - [ ] state changes
      - [ ] enemy waves
      - [ ] flappy obstacles
-   - [ ] particles
-     - [ ] hit sparks
-     - [ ] rocket trail
-     - [ ] explosion
  - [ ] graphics
+   - [x] particles
  - [ ] sounds
  

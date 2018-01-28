@@ -95,7 +95,7 @@ class Game {
         }
         e;
       } ];
-    entities.sort(entitySort);
+    //entities.sort(entitySort);
     render.tick();
   }
   

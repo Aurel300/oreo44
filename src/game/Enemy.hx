@@ -1,7 +1,7 @@
 package game;
 
 class Enemy extends Entity {
-  var hp = 2;
+  var hp = 1;
   var hurting = 0;
   
   public function new() {
