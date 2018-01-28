@@ -36,8 +36,8 @@ class KeyboardInputMethod implements InputMethod {
     return (switch (type) {
         case 1:
         var y = state["ArrowUp"] ? -1 : (state["ArrowDown"] ? 1 : 0);
-        Joystick(x, y);
-        case 2: Wheel(x);
+        Joystick(x, y, 0);
+        case 2: Wheel(x, 0, 0);
         case 3: Slider(x * .5 + 1);
         case _: None;
       });

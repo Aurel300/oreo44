@@ -1,2 +1,3 @@
+-lib hxmath
 -main Main
 -js ../build/game.js

@@ -10,8 +10,9 @@ class Main {
   public static var render:Renderer;
   
   public static function init():Void {
-    input = new KeyboardInputMethod();
+    input = new CameraInputMethod();
+    //input = new KeyboardInputMethod();
     render = new SVGRenderer("game");
-    new Game(input, render);
+    game = new Game(input, render);
   }
 }

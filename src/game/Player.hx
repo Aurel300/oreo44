@@ -10,11 +10,11 @@ class Player extends Entity {
   
   override public function tick():Void {
     switch (game.state) {
-      case Joystick(x, y):
+      case Joystick(x, y, z):
       this.x += x * JOY_SPEED;
       this.y += y * JOY_SPEED;
-      case Wheel(a):
-      this.x += a;
+      case Wheel(a, _, _):
+      this.y += a;
       case Slider(i):
       this.y += i;
       case None:
