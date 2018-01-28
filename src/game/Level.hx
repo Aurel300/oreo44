@@ -7,7 +7,7 @@ class Level {
   public var transitionLength:Int = 20;
   public var stateQueuePos:Int;
   public var stateQueue:Array<LevelState> = [Vertical, Horizontal/*, Plane, Horizontal*/];
-  public var stateLength:Array<Int> = [1, 700];
+  public var stateLength:Array<Int> = [900, 700];
   
   public var waves:Array<Wave> = [];
   public var lastWave:Int = 450;
@@ -16,7 +16,6 @@ class Level {
     this.game = game;
     stateQueuePos = stateQueue.length - 1;
     nextState();
-    //waves.push(new Wave());
   }
   
   function nextState():Void {

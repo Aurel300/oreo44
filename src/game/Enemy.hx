@@ -13,6 +13,7 @@ class Enemy extends Entity {
     if (hp <= 0) {
       for (i in 0...10) game.addEntity(new Particle(Explosion, x, y));
       remove = true;
+      Game.snd("kill");
       if (Math.random() < 0.02) game.addEntity(new Pickup(x, y));
     }
     super.hurt();
