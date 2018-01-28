@@ -16,4 +16,8 @@ class JSCompat {
     ret.className = cls;
     return ret;
   }
+  
+  public static inline function qs(sel:String):Element {
+    return js.Browser.document.querySelector(sel);
+  }
 }

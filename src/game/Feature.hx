@@ -7,6 +7,7 @@ class Feature extends Entity {
   public function new(up:Bool, dist:Float) {
     super(Feature);
     this.up = up;
+    dist = (dist < .2 ? .2 : (dist > .8 ? .8 : dist));
     this.dist = dist;
     this.x = dist * Game.SCREEN_LETTER;
     this.y = -50;

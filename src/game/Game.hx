@@ -1,8 +1,7 @@
 package game;
 
 import js.*;
-import input.InputMethod;
-import input.InputState;
+import input.*;
 import render.Renderer;
 
 class Game {
@@ -21,20 +20,17 @@ class Game {
   public var level:Level;
   public var cooldown:Int;
   public var player:Player;
+  public var hp:Float = 0.0;
+  public var playing:Bool = false;
+  public var bgPhase:Int = 0;
+  public var gameOvered:Bool = false;
   
   public function new(input:InputMethod, render:Renderer) {
     Main.game = this;
     this.input = input;
     this.render = render;
     Browser.window.requestAnimationFrame(tick);
-    restart();
-  }
-  
-  public function restart():Void {
-    pauseFrames = 0;
-    entities = [
-        player = new Player()
-      ];
+    entities = [];
     entityTypes = [
          Player => []
         ,Bullet(false) => []
@@ -43,9 +39,40 @@ class Game {
         ,Pickup => []
         ,Feature => []
         ,Particle => []
+        ,BG => []
       ];
+    //restart();
+  }
+  
+  public function cleanup():Void {
+    entities = [ for (e in entities) {
+        if (e.type != BG && e.type != Particle) {
+          e.destroy();
+          continue;
+        }
+        e;
+      } ];
+    entityTypes = [
+         Player => []
+        ,Bullet(false) => []
+        ,Bullet(true) => []
+        ,Enemy => []
+        ,Pickup => []
+        ,Feature => []
+        ,Particle => entityTypes[EntityType.Particle]
+        ,BG => entityTypes[EntityType.BG]
+      ];
+    hp = 1.0;
+    playing = false;
+  }
+  
+  public function restart():Void {
+    cleanup();
+    pauseFrames = 0;
+    addEntity(player = new Player());
     level = new Level(this);
     cooldown = 0;
+    playing = true;
   }
   
   public function addEntity(e:Entity):Void {
@@ -54,13 +81,63 @@ class Game {
   }
   
   function tick(e):Void {
+    if (KeyboardInputMethod.state["Space"] && !playing) {
+      restart();
+    }
     Browser.window.requestAnimationFrame(tick);
     if (pauseFrames > 0) {
       pauseFrames--;
       return;
     }
+    if (bgPhase > 0) bgPhase--;
+    if (bgPhase == 0) {
+      var n = 1 + Math.floor(Math.random() * 3);
+      for (i in 0...n) addEntity(new BG());
+      bgPhase += 90 + Math.floor(n * 20 * Math.random());
+    }
+    render.playing(playing, gameOvered);
+    entities = [ for (e in entities) {
+        if (e.type == BG || e.type == Particle) {
+          e.tick();
+          if (e.remove) {
+            entityTypes[e.type].remove(e);
+            e.destroy();
+            continue;
+          }
+        }
+        e;
+      } ];
+    if (!playing) {
+      render.mode(LevelState.Vertical);
+      render.health(1);
+      return;
+    }
+    if (hp < 0) {
+      for (i in 0...40) {
+        addEntity(new Particle(Explosion, player.x + Math.random() * 10 - 5, player.y + Math.random() * 10 - 5));
+      }
+      // snd death
+      cleanup();
+      gameOvered = true;
+      return;
+    }
+    hp = (hp < 0 ? 0 : (hp > 1 ? 1 : hp));
+    render.health(hp);
     state = input.tick();
     level.tick();
+    switch (level.state) {
+      case Vertical:
+      state = (switch (state) {
+          case Joystick(x, y): Joystick(x, y);
+          case _: None;
+        });
+      case Horizontal:
+      state = (switch (state) {
+          case Wheel(a): Wheel(a);
+          case _: None;
+        });
+      case _:
+    }
     if (cooldown > 0) cooldown--;
     if (cooldown % 3 == 0) {
       addEntity(new Particle(Thruster, player.x, player.y));
@@ -68,6 +145,7 @@ class Game {
     switch (level.state) {
       case Vertical:
       if (cooldown == 0) {
+        // snd pew
         addEntity(new Bullet(true, player.x, player.y));
       }
       case _:
@@ -75,23 +153,50 @@ class Game {
     if (cooldown == 0) cooldown = 6;
     for (b in entityTypes[EntityType.Bullet(true)]) {
       for (e in entityTypes[EntityType.Enemy]) {
-        if (collision(b, e, 5, 10)) {
+        if (collision(b, e, 15, 15)) {
           b.remove = true;
           (cast e:Enemy).hurt();
+          // snd hit
         }
       }
     }
     for (b in entityTypes[EntityType.Bullet(false)]) {
-      if (collision(b, player, 15, 15)) {
+      if (collision(b, player, 15, 15) && player.hurting == 0) {
+        // snd hurt
+        hp -= .2;
+        player.hurt();
         b.remove = true;
       }
     }
+    for (b in entityTypes[EntityType.Pickup]) {
+      if (collision(b, player, 25, 25)) {
+        // snd pickup
+        hp += .4;
+        player.hurt();
+        b.remove = true;
+      }
+    }
+    for (b in entityTypes[EntityType.Feature]) {
+      var dy = b.y - player.y;
+      dy = (dy < 0 ? -dy : dy);
+      if (dy < 20) {
+        var f = (cast b:Feature);
+        if (f.up == (player.x < f.x) && player.hurting == 0) {
+          // snd hurt
+          hp -= .2;
+          player.hurt();
+          b.remove = true;
+        }
+      }
+    }
     entities = [ for (e in entities) {
-        e.tick();
-        if (e.remove) {
-          entityTypes[e.type].remove(e);
-          e.destroy();
-          continue;
+        if (e.type != BG && e.type != Particle) {
+          e.tick();
+          if (e.remove) {
+            entityTypes[e.type].remove(e);
+            e.destroy();
+            continue;
+          }
         }
         e;
       } ];

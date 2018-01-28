@@ -6,10 +6,11 @@ class Level {
   public var stateTime:Int;
   public var transitionLength:Int = 20;
   public var stateQueuePos:Int;
-  public var stateQueue:Array<LevelState> = [Vertical, Horizontal, Plane, Horizontal];
-  public var stateLength:Array<Int> = [90000, 30, 30, 30];
+  public var stateQueue:Array<LevelState> = [Vertical, Horizontal/*, Plane, Horizontal*/];
+  public var stateLength:Array<Int> = [1, 700];
   
   public var waves:Array<Wave> = [];
+  public var lastWave:Int = 450;
   
   public function new(game:Game) {
     this.game = game;
@@ -47,9 +48,17 @@ class Level {
       if (stateTime >= transitionLength) updateState(to);
       return;
       case Vertical:
-      if (Math.random() < 0.01) waves.push(new Wave());
+      lastWave++;
+      if (lastWave >= 450 + Math.random() * 120) {
+        waves.push(new Wave());
+        lastWave = 0;
+      }
       case Horizontal:
-      if (Math.random() < 0.01) game.addEntity(new Feature(Math.random() < .5, Math.random()));
+      lastWave++;
+      if (lastWave >= 100 + Math.random() * 120) {
+        game.addEntity(new Feature(Math.random() < .5, Math.random()));
+        lastWave = 0;
+      }
       case _:
     }
     if (stateTime >= stateLength[stateQueuePos]) nextState();
@@ -57,19 +66,23 @@ class Level {
 }
 
 class Wave {
+  static var lastType:WaveType = Horizontal(true);
   public var entities:Array<Entity> = [];
   public var type:WaveType;
   public var remove:Bool = false;
   public var time:Int;
   
   public function new() {
-    var left = true;
-    entities = [ for (i in 0...15) {
+    var left = Math.random() < .5;
+    entities = [ for (i in 0...5 + Math.floor(Math.random() * 4)) {
         var e = new Enemy();
         Main.game.addEntity(e);
         e;
       } ];
-    type = Snake(left);
+    do {
+      type = choice([Horizontal(left), HorizontalRipple(left, 1), HorizontalRipple(left, 2), Surround(left), Snake(left)], Math.random() * 5);
+    } while (type == lastType);
+    lastType = type;
     time = 0;
     tick();
   }
@@ -79,7 +92,7 @@ class Wave {
     var alive = false;
     for (i in 0...entities.length) {
       var e = entities[i];
-      var etime:Int = time - i * 15;
+      var etime:Int = time - i * 50;
       if (!e.remove) alive = true;
       var tx = 0.0;
       var ty = 0.0;
@@ -121,6 +134,11 @@ class Wave {
     //trace([ for (e in entities) '${e.x} ${e.y}' ]);
     if (oob || !alive) remove = true;
     time++;
+  }
+  
+  function choice<T>(a:Array<T>, t:Float):T {
+    if (t < 0) return null;
+    return a[Math.floor(t) % a.length];
   }
   
   function lerpArr(a:Array<Float>, t:Float):Float {

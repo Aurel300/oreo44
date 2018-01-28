@@ -4,7 +4,7 @@ import js.*;
 import js.html.*;
 
 class KeyboardInputMethod implements InputMethod {
-  var state = [
+  public static var state = [
        "Space" => false
       ,"ArrowLeft" => false
       ,"ArrowUp" => false

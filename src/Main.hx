@@ -12,6 +12,6 @@ class Main {
   public static function init():Void {
     input = new KeyboardInputMethod();
     render = new SVGRenderer("game");
-    game = new Game(input, render);
+    new Game(input, render);
   }
 }

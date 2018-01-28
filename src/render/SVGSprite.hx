@@ -13,9 +13,11 @@ class SVGSprite extends Sprite {
     baseCls = 'ent $type';
     el = JSCompat.create(baseCls);
     el.innerHTML = (switch (type) {
-        case "player": "▲";
+        case "player": "⧊";
         case "bullet": "▼";
         case "bullet playerbullet": "▲";
+        case "enemy": "◈";
+        case "pickup": "⊕";
         case _: "";
       });
     SVGRenderer.letter.appendChild(el);

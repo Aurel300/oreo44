@@ -8,10 +8,10 @@
    - [x] screen modes
    - [x] entities
    - [ ] level generation
-     - [ ] state changes
-     - [ ] enemy waves
-     - [ ] flappy obstacles
+     - [ ] generate waves and features
+   - [x] hp / death
+   - [x] pickups
  - [ ] graphics
-   - [x] particles
+   - [ ] transition caution
  - [ ] sounds
  
