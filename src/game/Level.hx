@@ -31,6 +31,11 @@ class Level {
   
   function updateState(state:LevelState):Void {
     this.state = state;
+    switch (state) {
+      case Horizontal: Game.snd("trans2");
+      case Vertical: Game.snd("trans1");
+      case _:
+    }
     stateTime = 0;
     game.render.mode(state);
   }
