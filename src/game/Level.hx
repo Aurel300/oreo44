@@ -3,15 +3,34 @@ package game;
 class Level {
   public var game:Game;
   public var state:LevelState;
-  public var waves:Array<Wave> = [];
   public var stateTime:Int;
+  public var transitionLength:Int = 20;
+  public var stateQueuePos:Int;
+  public var stateQueue:Array<LevelState> = [Vertical, Horizontal, Plane, Horizontal];
+  public var stateLength:Array<Int> = [90, 9000, 30, 30];
+  
+  public var waves:Array<Wave> = [];
+  public var features:Array<Feature> = [];
   
   public function new(game:Game) {
     this.game = game;
-    updateState(Vertical);
+    stateQueuePos = stateQueue.length - 1;
+    nextState();
+    //waves.push(new Wave());
   }
   
-  function updateState(state:LevelState) {
+  function nextState():Void {
+    stateTime = 0;
+    stateQueuePos++;
+    stateQueuePos %= stateQueue.length;
+    if (this.state == null) {
+      updateState(stateQueue[stateQueuePos]);
+    } else {
+      updateState(Transition(this.state, stateQueue[stateQueuePos]));
+    }
+  }
+  
+  function updateState(state:LevelState):Void {
     this.state = state;
     stateTime = 0;
     game.render.mode(state);
@@ -25,12 +44,11 @@ class Level {
         w;
       } ];
     stateTime++;
-    if (stateTime >= 60) {
-      updateState(switch (state) {
-          case Vertical: Plane;
-          case Horizontal: Vertical;
-          case Plane: Horizontal;
-        });
+    switch (state) {
+      case Transition(_, to):
+      if (stateTime >= transitionLength) updateState(to);
+      case _:
+      if (stateTime >= stateLength[stateQueuePos]) nextState();
     }
   }
 }
@@ -42,13 +60,15 @@ class Wave {
   public var time:Int;
   
   public function new() {
-    entities = [ for (i in 0...5) {
+    var left = true;
+    entities = [ for (i in 0...15) {
         var e = new Enemy();
         Main.game.addEntity(e);
         e;
       } ];
-    type = Horizontal;
+    type = Snake(left);
     time = 0;
+    tick();
   }
   
   public function tick():Void {
@@ -56,20 +76,68 @@ class Wave {
     var alive = false;
     for (i in 0...entities.length) {
       var e = entities[i];
+      var etime:Int = time - i * 15;
       if (!e.remove) alive = true;
+      var tx = 0.0;
+      var ty = 0.0;
       switch (type) {
-        case Horizontal:
-        e.x = time - i * 20;
-        e.y = 20;
-        if (e.x < 600) oob = false;
-        else e.remove = true;
+        case Horizontal(left):
+        tx = Game.SCREEN_LETTER_HALF
+          + (-Game.SCREEN_LETTER_HALF + etime) * (left ? 1 : -1);
+        ty = 50;
+        case HorizontalRipple(left, n):
+        var xc = (-Game.SCREEN_LETTER_HALF + etime);
+        tx = Game.SCREEN_LETTER_HALF
+          + xc * (left ? 1 : -1);
+        var s = Math.sin((xc / Game.SCREEN_LETTER) * Math.PI * n);
+        ty = 50 + s * s * 150;
+        case Surround(left):
+        var xc = lerpArr([-1.1, .8, .8, -.8, -.8, 1, 2], etime / 100);
+        var yc = lerpArr([.7, .7, .2, .2, .7, .7, .7], etime / 100);
+        tx = Game.SCREEN_LETTER_HALF + xc * Game.SCREEN_LETTER_HALF * (left ? 1 : -1);
+        ty = yc * Game.SCREEN;
+        case Snake(left):
+        var xc = lerpArr([-1.1, .8, -.8, 1, 2], etime / 100);
+        var yc = lerpArr([.2, .2, .7, .7, .7], etime / 100);
+        tx = Game.SCREEN_LETTER_HALF + xc * Game.SCREEN_LETTER_HALF * (left ? 1 : -1);
+        ty = yc * Game.SCREEN;
       }
+      if (etime < 0) {
+        e.x = e.y = -20;
+      } else if (etime == 0) {
+        e.x = tx;
+        e.y = ty;
+      } else {
+        e.x = (e.x * 7 + tx) / 8;
+        e.y = (e.y * 7 + ty) / 8;
+      }
+      if (e.x > -Game.LETTER && e.x < Game.SCREEN_LETTER + Game.LETTER
+          && e.y > -Game.LETTER && e.y < Game.SCREEN + Game.LETTER) oob = false;
+      else e.remove = true;
     }
+    //trace([ for (e in entities) '${e.x} ${e.y}' ]);
     if (oob || !alive) remove = true;
     time++;
+  }
+  
+  function lerpArr(a:Array<Float>, t:Float):Float {
+    if (t < 0) return 0;
+    var p1 = Math.floor(t);
+    return lerp(a[p1 % a.length], a[(p1 + 1) % a.length], t - p1);
+  }
+  
+  function lerp(a:Float, b:Float, r:Float):Float {
+    return a * (1 - r) + b * r;
   }
 }
 
 enum WaveType {
-  Horizontal;
+  Horizontal(left:Bool);
+  HorizontalRipple(left:Bool, n:Int);
+  Surround(left:Bool);
+  Snake(left:Bool);
+}
+
+class Feature {
+  
 }

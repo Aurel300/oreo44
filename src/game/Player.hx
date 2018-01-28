@@ -19,6 +19,8 @@ class Player extends Entity {
       this.y += i;
       case None:
     }
+    x = (x < 10 ? 10 : (x > Game.SCREEN_LETTER - 10 ? Game.SCREEN_LETTER - 10 : x));
+    y = (y < 10 ? 10 : (y > Game.SCREEN - 10 ? Game.SCREEN - 10 : y));
     super.tick();
   }
 }

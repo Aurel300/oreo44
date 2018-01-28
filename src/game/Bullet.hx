@@ -13,7 +13,7 @@ class Bullet extends Entity {
   
   override public function tick():Void {
     y += player ? -8 : 3;
-    if (y < -100) remove = true;
+    if (y < -Game.LETTER || y > Game.SCREEN + Game.LETTER) remove = true;
     super.tick();
   }
 }

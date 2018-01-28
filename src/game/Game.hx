@@ -6,6 +6,12 @@ import input.InputState;
 import render.Renderer;
 
 class Game {
+  public static inline var SCREEN = 600;
+  public static inline var LETTER = 100;
+  public static inline var SCREEN_HALF = SCREEN / 2;
+  public static inline var SCREEN_LETTER = SCREEN - 2 * LETTER;
+  public static inline var SCREEN_LETTER_HALF = SCREEN_LETTER / 2;
+  
   public var input:InputMethod;
   public var render:Renderer;
   public var pauseFrames:Int;

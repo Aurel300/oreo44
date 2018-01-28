@@ -16,9 +16,10 @@ class SVGRenderer implements Renderer {
   
   public function mode(s:LevelState):Void {
     svg.className = (switch (s) {
-        case Vertical: "";
-        case Horizontal: "horizontal";
-        case Plane: "plane";
+        case Transition(_, Vertical) | Vertical: "";
+        case Transition(_, Horizontal) | Horizontal: "horizontal";
+        case Transition(_, Plane) | Plane: "plane";
+        case _: "";
       });
   }
   
