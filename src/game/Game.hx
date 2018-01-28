@@ -86,7 +86,7 @@ class Game {
   }
   
   function tick(e):Void {
-    if (KeyboardInputMethod.state["Space"] && !playing) {
+    if ((KeyboardInputMethod.state["Space"] || CameraInputMethod.lastState != None) && !playing) {
       restart();
     }
     Browser.window.requestAnimationFrame(tick);
@@ -133,12 +133,12 @@ class Game {
     switch (level.state) {
       case Vertical:
       state = (switch (state) {
-          case Joystick(x, y): Joystick(x, y);
+          case Joystick(x, y, z): Joystick(x, y, z);
           case _: None;
         });
       case Horizontal:
       state = (switch (state) {
-          case Wheel(a): Wheel(a);
+          case Wheel(x, y, z): Wheel(x, y, z);
           case _: None;
         });
       case _:

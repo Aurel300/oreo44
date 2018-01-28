@@ -63,8 +63,8 @@
    */
   tracking.initUserMedia_ = function(element, opt_options) {
     window.navigator.mediaDevices.getUserMedia({
-      video: true,
-      audio: (opt_options && opt_options.audio) ? true : false,
+      video: {frameRate: {ideal: 10, max: 20}},
+      audio: false,
     }).then(function(stream) {
       element.srcObject = stream;
     }).catch(function(err) {
@@ -2444,6 +2444,27 @@
     return dx * dx + dy * dy + dz * dz < 10000;
   });
 
+  tracking.ColorTracker.registerColor('turquoise', function(r, g, b) {
+    var total = r + g + b;
+    if(total > 280 || total < 180){
+      return false;
+    }
+    var ratioB = (100 / 235) / (b / total);
+    var ratioG = (116 / 235) / (g / total);
+    return ratioB > 0.75 && ratioB < 1.25 &&
+          ratioG > 0.75 && ratioG < 1.25;
+  });
+  tracking.ColorTracker.registerColor('orange', function(r, g, b) {
+    var threshold = 70;
+    var dx = r - 255;
+    var dy = g - 130;
+    var dz = b - 0;
+
+    if ((r - g) >= threshold && (r - b) >= threshold * 2) {
+      return true;
+    }
+    return dx * dx + dy * dy + dz * dz < 15000;
+  });
 
   // Caching neighbour i/j offset values.
   //=====================================
